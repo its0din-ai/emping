@@ -12,6 +12,7 @@ versioning for the application; the internal service protocol has its own versio
 - Added a blank line between completed request/reply and request/timeout pairs.
 - Refreshed the release bundle in `dist/release/`.
 - Release tarballs now include `CHANGELOG.md`.
+- Added a tag-triggered GitHub release workflow for Linux amd64/aarch64 binaries.
 
 ### Fixed
 

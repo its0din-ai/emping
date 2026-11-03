@@ -353,7 +353,8 @@ cargo build --release
 ```
 
 Generated release bundles live under `dist/release/`; `dist/` is intentionally
-ignored by git. CI publishes target-specific archives for Linux and macOS.
+ignored by git. CI builds and tests the full matrix, while tagged `v*` releases publish
+Linux amd64/aarch64 archives.
 
 Packet capture is delegated to `pnet` (AF_PACKET on Linux, BPF on macOS). The service
 layer uses Unix primitives (`flock`, `setsid`, signals) available on both platforms,
@@ -364,8 +365,9 @@ and the application code has no architecture-specific assumptions.
 | Linux | x86_64, aarch64, armv7* |
 | macOS | x86_64 (Intel), aarch64 (Apple silicon), universal |
 
-\* Any target supported by Rust + `pnet` should work; the CI matrix builds the four
-primary targets plus a universal macOS binary and can be extended.
+\* Any target supported by Rust + `pnet` should work. CI builds the four primary
+targets plus a universal macOS binary; tagged releases publish Linux amd64/aarch64
+archives.
 
 ### Cross-compilation
 
