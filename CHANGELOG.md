@@ -3,6 +3,13 @@
 All notable changes to `emping` are documented here. Versions follow semantic
 versioning for the application; the internal service protocol has its own version.
 
+## [Unreleased]
+
+### Changed
+
+- GitHub Actions no longer runs the full build matrix on every `main` commit or pull
+  request. Automatic builds are tag-only; the full CI matrix can be started manually.
+
 ## [0.2.2] - 2026-11-03
 
 ### Changed
