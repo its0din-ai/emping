@@ -139,8 +139,14 @@ fn looks_like_icmp(frame: &[u8], ipv6: bool) -> bool {
 
 pub fn install_signal_handlers() {
     unsafe {
-        libc::signal(libc::SIGINT, handle_signal as libc::sighandler_t);
-        libc::signal(libc::SIGTERM, handle_signal as libc::sighandler_t);
+        libc::signal(
+            libc::SIGINT,
+            handle_signal as *const () as libc::sighandler_t,
+        );
+        libc::signal(
+            libc::SIGTERM,
+            handle_signal as *const () as libc::sighandler_t,
+        );
     }
 }
 
