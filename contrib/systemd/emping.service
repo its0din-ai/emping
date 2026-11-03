@@ -1,0 +1,38 @@
+[Unit]
+Description=emping ICMP echo monitor
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/emping daemon
+Restart=on-failure
+RestartSec=2s
+TimeoutStopSec=10s
+
+# The socket and PID file live here. The TUI must run as root or be given access
+# to this socket.
+RuntimeDirectory=emping
+RuntimeDirectoryMode=0755
+
+# AF_PACKET capture needs CAP_NET_RAW. Add CAP_NET_ADMIN only if you use
+# --promisc.
+CapabilityBoundingSet=CAP_NET_RAW
+#CapabilityBoundingSet=CAP_NET_RAW CAP_NET_ADMIN
+NoNewPrivileges=true
+
+ProtectSystem=strict
+ReadWritePaths=/run/emping
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_PACKET AF_UNIX AF_INET AF_INET6 AF_NETLINK
+RestrictNamespaces=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,40 @@
+# Rust build output
+/target/
+**/*.rs.bk
+*.profraw
+*.profdata
+
+# Local release/packaging output
+/dist/
+*.tar.gz
+*.tar.zst
+*.zip
+*.deb
+*.rpm
+*.dmg
+*.pkg
+*.AppImage
+*.iso
+*.img
+
+# Runtime and test artifacts
+*.sock
+*.pid
+*.log
+*.pcap
+*.pcapng
+core
+core.*
+
+# Python harness
+__pycache__/
+*.py[cod]
+.venv/
+
+# Editors and OS files
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
