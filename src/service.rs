@@ -1031,7 +1031,7 @@ fn read_message(reader: &mut BufReader<UnixStream>) -> Result<ServerMessage> {
     protocol::decode_server(&line).context("decode service message")
 }
 
-fn read_line_limited(reader: &mut BufReader<UnixStream>, max: usize) -> Result<Option<String>> {
+fn read_line_limited<R: BufRead>(reader: &mut R, max: usize) -> Result<Option<String>> {
     let mut bytes = Vec::new();
     let read = reader
         .by_ref()
@@ -1040,7 +1040,9 @@ fn read_line_limited(reader: &mut BufReader<UnixStream>, max: usize) -> Result<O
     if read == 0 {
         return Ok(None);
     }
-    if bytes.len() > max {
+    let has_newline = bytes.last() == Some(&b'\n');
+    let content_len = bytes.len() - usize::from(has_newline);
+    if content_len > max {
         bail!("message exceeds {max} bytes");
     }
     let text = String::from_utf8(bytes).context("message is not UTF-8")?;
@@ -1158,14 +1160,22 @@ mod tests {
 
     #[test]
     fn oversized_requests_are_rejected() {
-        let (mut client, server) = UnixStream::pair().unwrap();
-        client
-            .write_all(&vec![b'x'; MAX_REQUEST_BYTES + 1])
-            .unwrap();
-        drop(client);
-
-        let mut reader = BufReader::new(server);
+        // Use an in-memory reader so this test cannot block on a small macOS
+        // Unix-socket send buffer.
+        let data = vec![b'x'; MAX_REQUEST_BYTES + 1];
+        let mut reader = BufReader::new(data.as_slice());
         assert!(read_line_limited(&mut reader, MAX_REQUEST_BYTES).is_err());
+    }
+
+    #[test]
+    fn maximum_sized_requests_are_accepted() {
+        let mut data = vec![b'y'; MAX_REQUEST_BYTES];
+        data.push(b'\n');
+        let mut reader = BufReader::new(data.as_slice());
+        let line = read_line_limited(&mut reader, MAX_REQUEST_BYTES)
+            .unwrap()
+            .unwrap();
+        assert_eq!(line.len(), MAX_REQUEST_BYTES);
     }
 
     #[test]
